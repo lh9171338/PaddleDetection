@@ -10,7 +10,6 @@
 
 import os
 import cv2
-from importlib_resources import path
 import numpy as np
 import random
 import pickle
@@ -343,8 +342,6 @@ class CopyAndPalse:
         logging.info("GT samples: ")
         for key, value in self.gt_samples.items():
             logging.info("{}: {}".format(key, len(value)))
-
-        random.seed(0)
 
     def __call__(self, sample):
         image = sample["image"]
