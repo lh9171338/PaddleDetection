@@ -19,8 +19,8 @@ import lh_ppdet
 setup(
     name="lh_ppdet",
     version=lh_ppdet.__version__.replace("-", ""),
-    description=("TLDet"),
-    long_description="traffic light detection",
+    description=("lh-ppdet"),
+    long_description="PaddlePaddle Object Detection",
     author="lh9171338",
     author_email="lihao2015@whu.edu.cn",
     # PyPI package information.
