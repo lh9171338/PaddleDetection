@@ -1,15 +1,15 @@
-[<img height="23" src="https://github.com/lh9171338/Outline/blob/master/icon.jpg"/>](https://github.com/lh9171338/Outline) lh-ppdet
+[<img height="23" src="https://github.com/lh9171338/Outline/blob/master/icon.jpg"/>](https://github.com/lh9171338/Outline) PaddleDetection
 ===
 
-This is a Paddle detection package.
+This is a object detection package based on PaddlePaddle.
 
 # Model
-- [x] [YOLOv3](https://github.com/lh9171338/lh-ppdet/blob/main/docs/bosch_traffic_light.md)
+- [x] [YOLOv3](https://github.com/lh9171338/PaddleDetection/blob/main/docs/bosch_traffic_light.md)
 
 # Install
 ```shell
-git clone https://github.com/lh9171338/lh-ppdet.git
-cd lh-ppdet
+git clone https://github.com/lh9171338/PaddleDetection.git
+cd PaddleDetection
 python -m pip install -r requirements.txt
 python -m pip install -v -e .
 ```

@@ -1,0 +1,144 @@
+epochs: 40
+batch_size: 4
+
+# ======================== common config ========================
+define: &num_classes 8
+define: &class_names ['RedLeft', 'Red', 'RedRight',
+                'GreenLeft', 'Green', 'GreenRight', 'Yellow', 'off']
+
+# ======================== dataset ========================
+define: &dataset_type BoschTrafficLightDataset
+define: &data_root data/bosch_traffic_light
+define: &ann_file_train data/bosch_traffic_light/train-2832.pkl
+define: &ann_file_val data/bosch_traffic_light/val-1684.pkl
+# define: &data_root_val data/bosch_traffic_light/test-577.pkl
+
+# ======================== train dataset ========================
+train_dataset:
+  type: CBGSDataset
+  dataset:
+    type: *dataset_type
+    data_root: *data_root
+    ann_file: *ann_file_train
+    mode: train
+    class_names: *class_names
+    pipeline:
+      - type: LoadImageFromFile
+      - type: ColorJitter
+        brightness: 0.4
+        contrast: 0.4
+        saturation: 0.4
+      - type: CopyAndPalse
+        class_names: *class_names
+        db_sampler_file: data/bosch_traffic_light/dbsampler.pkl
+        num_samples: 5
+      - type: RandomCropImage
+        prob: 0.5
+        size: [640, 640]
+      - type: RandomErasingImage
+      - type: ResizeImage
+        size: [640, 640]
+      - type: ShuffleLabel
+      - type: NormalizeImage
+        mean: [123.675, 116.28, 103.53]
+        std: [58.395, 57.12, 57.375]
+
+# ======================== val dataset ========================
+val_dataset:
+  type: *dataset_type
+  data_root: *data_root
+  ann_file: *ann_file_val
+  mode: val
+  class_names: *class_names
+  pipeline:
+    - type: LoadImageFromFile
+    - type: ResizeImage
+      size: [640, 640]
+    - type: NormalizeImage
+      mean: [123.675, 116.28, 103.53]
+      std: [58.395, 57.12, 57.375]
+
+# ======================== model definition ========================
+define: &norm_type bn
+define: &lr 1.0e-2
+define: &start_lr 1.0e-3
+define: &weight_decay 1.0e-2
+define: &warmup_steps 5
+
+model:
+  type: YOLOv3
+
+  backbone:
+    type: DarkNet
+    ch_in: 3
+    ch_out: 32
+    depths: [1, 2, 8, 8, 4]
+    out_indices: [2, 3, 4]
+    norm_type: *norm_type
+
+  neck:
+    type: YOLOv3FPN
+    in_channels: [256, 512, 1024]
+    out_channels: [256, 512, 1024]
+    norm_type: *norm_type
+
+  head:
+    type: YOLOv3Head
+    in_channels: [256, 512, 1024]
+    anchors: [[10, 13], [16, 30], [33, 23], [30, 61], [62, 45], [59, 119], [116, 90], [156, 198], [373, 326]]
+    anchor_masks: [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    downsamples: [8, 16, 32]
+    num_classes: *num_classes
+    box_coder:
+      type: YOLOv3BoxCoder
+      num_classes: *num_classes
+      iou_aware: False
+      iou_aware_factor: 0.4
+      image_size: [640, 640]
+      conf_thresh: 0.05
+      max_num: 1000
+    nms:
+      type: MultiClassNMS
+      use_multi_class_nms: False
+      nms_thresh: 0.45
+      score_thresh: 0.05
+      nms_pre_max_size: 1000
+      nms_post_max_size: 1000
+    loss_xy:
+      type: BCELoss
+      with_logits: True
+    loss_wh:
+      type: L1Loss
+    loss_cls:
+      type: BCELoss
+      with_logits: True
+    loss_conf:
+      type: BCELoss
+      with_logits: True
+
+optimizer:
+  type: AdamW
+  learning_rate: *lr
+  weight_decay: *weight_decay
+
+scheduler_by_epoch: True
+lr_scheduler:
+  type: LinearWarmup
+  learning_rate:
+    type: MultiStepDecay
+    learning_rate: *lr
+    milestones: [15, 25]
+    gamma: 0.1
+  warmup_steps: *warmup_steps
+  start_lr: *start_lr
+  end_lr: *lr
+
+visualizer:
+  type: BoxVisualizer
+  class_names: *class_names
+  score_thresh: 0
+  nprocs: 1
+
+metric:
+  type: MAPMetric
+  class_names: *class_names

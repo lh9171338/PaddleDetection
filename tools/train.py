@@ -16,7 +16,7 @@ import numpy as np
 import logging
 import argparse
 import time
-from lh_ppdet.apis import Config, Trainer
+from ppdet.apis import Config, Trainer
 
 
 def parse_args():

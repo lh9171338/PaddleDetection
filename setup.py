@@ -13,14 +13,14 @@
 # limitations under the License.
 
 from setuptools import setup
-import lh_ppdet
+import ppdet
 
 
 setup(
-    name="lh_ppdet",
-    version=lh_ppdet.__version__.replace("-", ""),
-    description=("lh-ppdet"),
-    long_description="PaddlePaddle Object Detection",
+    name="ppdet",
+    version=ppdet.__version__.replace("-", ""),
+    description=("ppdet"),
+    long_description="Object Detection based on PaddlePaddle",
     author="lh9171338",
     author_email="lihao2015@whu.edu.cn",
     # PyPI package information.
@@ -40,5 +40,5 @@ setup(
         "Topic :: Software Development :: Libraries",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords=("PaddlePaddle Detection Package"),
+    keywords=("Object Detection Package based on PaddlePaddle"),
 )
