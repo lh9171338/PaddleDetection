@@ -15,10 +15,10 @@ logdir=${OUTOUT}/log-test
 
 # kill
 ./kill.sh run.py
-./kill.sh train.py
+./kill.sh test.py
 sleep 5
 
-# train
+# test
 python -m paddle.distributed.launch \
     --log_dir ${logdir} \
     --nnodes ${NNODES} \
